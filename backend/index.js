@@ -2,7 +2,9 @@ const TelegramBot = require('node-telegram-bot-api');
 
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const multer = require('multer');
+const fileUpload = require('express-fileupload');
 const path = require('path');
 
 const PORT = 8000;
@@ -11,28 +13,35 @@ app.get('/', (req, res) => {
     res.send('Home');
 });
 
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-      cb(null, file.originalname);
-    },
-  }),
-});
-let notesArray = [];
+// UPLOAD IMG
+app.use(fileUpload({
+  createParentPath: true,
+}));
 
-app.post('/', upload.single('file'), (req, res) => {
-  const notes = JSON.parse(req.body.notes);
+app.use(cors());
 
-  notesArray.push(notes);
+app.post('/upload', (req, res) => {
+  if (!req.files) {
+    return res.status(404).json({msg: 'Not file upload'});
+  };
 
-  res.send('NOTES SAVED');
-});
+  const file = req.files.file;
 
-app.get('/notes', (req, res) => {
-  res.send(notesArray);
+  if (!file) return res.json({error: 'incorrect input name'});
+
+  const newFileName = encodeURI(Date.now() + '-' + file.name);
+  file.mv(`${__dirname}/../frontend/src/upload/${newFileName}`,
+    err => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      };
+
+      res.json({
+        fileName: file.name,
+        filePath: `../../../../upload${newFileName}`,
+      });
+    });
 });
 
 app.listen(PORT, (err) => {
@@ -64,3 +73,26 @@ bot.on('message', async (msg) => {
     })
   };
 });
+
+
+// const upload = multer({
+//   storage: multer.diskStorage({
+//     destination: (req, file, cb) => {
+//       cb(null, 'uploads/');
+//     },
+//     filename: (req, file, cb) => {
+//       cb(null, file.originalname);
+//     },
+//   }),
+// });
+// let notesArray = [];
+// app.post('/', upload.single('file'), (req, res) => {
+//   const notes = JSON.parse(req.body.notes);
+
+//   notesArray.push(notes);
+
+//   res.send('NOTES SAVED');
+// });
+// app.get('/notes', (req, res) => {
+//   res.send(notesArray);
+// });
