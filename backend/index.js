@@ -3,11 +3,14 @@ const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const multer = require('multer');
+// const multer = require('multer');
 const fileUpload = require('express-fileupload');
 const path = require('path');
+// const fs = require('fs');
 
 const PORT = 8000;
+
+const uploadDir = path.join(__dirname, 'upload');
 
 app.get('/', (req, res) => {
     res.send('Home');
@@ -38,11 +41,31 @@ app.post('/upload', (req, res) => {
       };
 
       res.json({
-        fileName: file.name,
-        filePath: `../../../../upload${newFileName}`,
+        img: file.name,
+        id: 1,
+        filePath: newFileName,
       });
     });
 });
+
+// app.get('/upload/:id', (req, res) => {
+//   // const id = req.params.id;
+//   // const img = req.body.newFileName
+
+//   // res.json({id: id, img: img});
+//   const id = req.params.id;
+//   // Получаем список файлов в директории uploadDir
+//   const files = fs.readdirSync(uploadDir);
+//   // Ищем файл с именем, содержащим значение id
+//   const file = files.find(filename => filename.includes(id));
+//   if (file) {
+//     // Если файл найден, отправляем его как ответ на запрос GET
+//     res.sendFile(path.join(uploadDir, file));
+//   } else {
+//     // Если файл не найден, отправляем статус 404 Not Found
+//     res.status(404).send('Файл не найден');
+//   }
+// })
 
 app.listen(PORT, (err) => {
   console.log('so far everything is working like clockwork');
