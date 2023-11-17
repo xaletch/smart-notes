@@ -7,10 +7,25 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 // const fs = require('fs');
+const mongoose = require('mongoose');
 
 const PORT = 8000;
 
+app.use(express.json());
+app.use(cors());
+
+mongoose
+  .connect('mongodb://127.0.0.1:27017/PlanYourDay')
+  .then(() => console.log('УСПЕШНОЕ ПОДКЛЮЧЕНИЕ К БД!'))
+  .catch((err) => console.log('УПС...', err))
+
 const uploadDir = path.join(__dirname, 'upload');
+
+// require('dotenv').config();
+
+const routes = require('./routes/note')
+
+app.use(routes);
 
 app.get('/', (req, res) => {
     res.send('Home');
@@ -20,8 +35,6 @@ app.get('/', (req, res) => {
 app.use(fileUpload({
   createParentPath: true,
 }));
-
-app.use(cors());
 
 app.post('/upload', (req, res) => {
   if (!req.files) {
