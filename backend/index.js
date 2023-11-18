@@ -23,9 +23,11 @@ const uploadDir = path.join(__dirname, 'upload');
 
 // require('dotenv').config();
 
-const routes = require('./routes/note')
+const routes = require('./routes/note');
+const userRoutes = require('./routes/user');
 
 app.use(routes);
+app.use(userRoutes);
 
 app.get('/', (req, res) => {
     res.send('Home');
