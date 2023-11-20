@@ -38,7 +38,7 @@ module.exports.saveNote = async (req, res) => {
         });
 
         const saveNote = await note.save();
-
+        // const noteId = saveNote._id;
         res.json({ note: saveNote });
     }
     catch (err) {
@@ -55,6 +55,10 @@ module.exports.updateNote = async (req, res) => {
             _id: noteId,
         }, {
             name: req.body.name,
+            title: req.body.title,
+            smile: req.body.smile,
+            text: req.body.text,
+            imageUrl: req.body.imageUrl,
         });
 
         if (!note) {
