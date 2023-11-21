@@ -34,6 +34,7 @@ module.exports.saveNote = async (req, res) => {
     try {
         const note = new noteModel({
             name: req.body.name,
+            imageUrl: req.body.url,
             user: req.userId,
         });
 
@@ -58,7 +59,7 @@ module.exports.updateNote = async (req, res) => {
             title: req.body.title,
             smile: req.body.smile,
             text: req.body.text,
-            imageUrl: req.body.imageUrl,
+            imageUrl: req.body.url,
         });
 
         if (!note) {

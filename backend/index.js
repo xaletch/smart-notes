@@ -38,6 +38,8 @@ app.use(fileUpload({
   createParentPath: true,
 }));
 
+app.use('/uploads', express.static('uploads'));
+
 app.post('/upload', (req, res) => {
   if (!req.files) {
     return res.status(404).json({msg: 'Not file upload'});
