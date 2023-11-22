@@ -30,7 +30,26 @@ module.exports.getOneNote = async (req, res) => {
     }
 }
 
- 
+module.exports.saveNote = async (req, res) => {
+    try {
+        const note = new noteModel({
+            name: req.body.name,
+            title: req.body.title,
+            smile: req.body.smile,
+            text: req.body.text,
+            imageUrl: req.body.imageUrl,
+            user: req.userId,
+        });
+
+        const saveNote = await note.save();
+        // const noteId = saveNote._id;
+        res.json({ note: saveNote });
+    }
+    catch (err) {
+        console.log('произошла ошибка при создании note: \n', err);
+        res.status(501).json({ message: "Не удалось создать note" });
+    }
+};
 
 module.exports.updateNote = async (req, res) => {
     try {
