@@ -63,6 +63,7 @@ module.exports.updateNote = async (req, res) => {
             smile: req.body.smile,
             text: req.body.text,
             imageUrl: req.body.imageUrl,
+            blocks: req.body.blocks,
         });
 
         if (!note) {

@@ -17,6 +17,7 @@ const noteSchema = new mongoose.Schema({
         type: String,
     },
     imageUrl: String,
+    blocks: [Object],
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
