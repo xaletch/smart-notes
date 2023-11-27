@@ -1,4 +1,7 @@
 const { Router } = require('express');
+
+const noteModel = require('../models/noteModel');
+
 const { getNote, saveNote, updateNote, deleteNote, getOneNote } = require('../controllers/noteControllers');
 const checkAuth = require('../utils/checkAuth');
 const { notesValidation } = require('../validation/notesValidation');
@@ -7,7 +10,17 @@ const { upload } = require('../controllers/uploadImd');
 
 const router = Router();
 
-router.get('/notes', checkAuth, getNote);
+router.get('/notes', checkAuth, getNote, async (req, res) => {
+    try {
+        const { search } = req.query;
+        const searchNote = await noteModel.find({ user: req.userId });
+        res.send(searchNote);
+    }
+    catch (err) {
+        console.log(err);
+        res.send({message: "ошибка", err})
+    }
+});
 router.post('/notes/save', checkAuth, saveNote);
 router.get('/notes/oneNote/:id', checkAuth, getOneNote);
 router.patch('/notes/update/:id', checkAuth, updateNote);
