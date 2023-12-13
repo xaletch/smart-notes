@@ -18,6 +18,6 @@ exports.auth = async (req, res) => {
     }
     catch (err) {
         console.log('auth err: ', err);
-        res.status(501).json({ message: "Ошибка при входе в аккаунт" });
+        res.status(500).json({ message: "Ошибка при входе в аккаунт" });
     }
 };

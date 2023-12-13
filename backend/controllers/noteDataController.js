@@ -27,6 +27,6 @@ module.exports.noteDataCreate = async (req, res) => {
     }
     catch (err) {
         console.log('Не удалось создать контент для заметки \n', err);
-        res.status(501).json({ message: "Не удалось создать контент для заметки" });
+        res.status(500).json({ message: "Не удалось создать контент для заметки" });
     }
 };

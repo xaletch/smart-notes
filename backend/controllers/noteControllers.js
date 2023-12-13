@@ -1,4 +1,6 @@
+const { model } = require('mongoose');
 const noteModel = require('../models/noteModel');
+const noteCartModel = require('../models/noteCartModel');
 
 module.exports.getNote = async (req, res) => {
     try {
@@ -8,7 +10,7 @@ module.exports.getNote = async (req, res) => {
     }
     catch (err) {
         console.log('При получении заметок произошла ошибка: \n', err);
-        trs.send(502).json({ message: "При получении заметок произошла ошибка" });
+        trs.send(500).json({ message: "При получении заметок произошла ошибка" });
     }
 };
 
@@ -26,7 +28,7 @@ module.exports.getOneNote = async (req, res) => {
     }
     catch (err) {
         console.log('При получении заметки произошла ошибка: \n', err);
-        res.send(502).json({ message: "Не удалось получить выбранную заметку" });
+        res.send(500).json({ message: "Не удалось получить выбранную заметку" });
     }
 }
 
@@ -74,10 +76,11 @@ module.exports.updateNote = async (req, res) => {
     }
     catch (err) {
         console.log('При обновлении заметки произошла ошибка: \n', err);
-        res.status(505).json({ message: "Не удалось обновить заметку" });
+        res.status(500).json({ message: "Не удалось обновить заметку" });
     }
 };
 
+// WILL NEED TO BE REPLACED
 module.exports.deleteNote = async (req, res) => {
     try {
         const noteId = req.params.id;
@@ -95,3 +98,43 @@ module.exports.deleteNote = async (req, res) => {
         res.status(500).json({ message: "Не удалось удалить заметку." });
     }
 };
+
+// NEW CODE FOR ADDING A NOTE TO THE CART AND REMOVING IT
+module.exports.addToCart = async (req, res) => {
+    try {
+        const noteId = req.params.id;
+
+        const note = await noteModel.findById({ _id: noteId });
+        const delNote = await noteModel.findByIdAndDelete(noteId);
+
+        if (!note) {
+            res.status(404).json({ success: false, message: "Не удалось дабавить заметку в корзину" })
+        };
+
+        if (!delNote) {
+            res.status(404).json({ success: false, message: "Не удалось удалить заметку", note: delNote });
+        };
+
+        const noteCart = new noteCartModel({
+            notes: note,
+        });
+
+        const saveNote = await noteCart.save();
+
+        res.status(200).json({ success: true, message: "Успешное добавление заметки в корзину", note: saveNote, delete: delNote });
+    }
+    catch (err) {
+        res.status(500).json({ message: "Что-то пошло не так!" })
+    }
+}
+
+module.exports.cartNote = async (req, res) => {
+    try {
+        const noteCart = await noteCartModel.find({}).populate('notes').exec();
+
+        res.status(200).json({ success: true, message: null, data: noteCart });
+    }
+    catch (err) {
+        res.status(500).json({ message: "Что-то пошло не так!" })
+    }
+}
