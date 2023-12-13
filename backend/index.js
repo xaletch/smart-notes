@@ -10,6 +10,17 @@ const PORT = 8000;
 app.use(express.json());
 app.use(cors());
 
+// mongodb://127.0.0.1:27017/PlanYourDay
+
+
+// mongodb+srv://k67901890:yfA8ADqu6o7KXeBT@note.auazd0t.mongodb.net/?retryWrites=true&w=majority
+// k67901890
+// oYcoGUX5IJDa4wle
+
+
+// k67901890
+// yfA8ADqu6o7KXeBT
+
 mongoose
   .connect('mongodb://127.0.0.1:27017/PlanYourDay')
   .then(() => console.log('УСПЕШНОЕ ПОДКЛЮЧЕНИЕ К БД!'))

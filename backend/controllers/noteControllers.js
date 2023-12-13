@@ -47,7 +47,7 @@ module.exports.saveNote = async (req, res) => {
     }
     catch (err) {
         console.log('произошла ошибка при создании note: \n', err);
-        res.status(501).json({ message: "Не удалось создать note" });
+        res.status(500).json({ message: "Не удалось создать note" });
     }
 };
 
@@ -88,7 +88,7 @@ module.exports.deleteNote = async (req, res) => {
             return res.status(404).json({ message: "Заметка не найдена" });
         }
 
-        res.json({ message: "Заметка удалена" });
+        res.json({ message: "Заметка удалена", note: note });
 
     } catch (err) {
         console.log('При удалении заметки произошла ошибка.: \n', err);
