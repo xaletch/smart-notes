@@ -1,4 +1,3 @@
-const { model } = require('mongoose');
 const noteModel = require('../models/noteModel');
 const noteCartModel = require('../models/noteCartModel');
 
@@ -30,7 +29,7 @@ module.exports.getOneNote = async (req, res) => {
         console.log('При получении заметки произошла ошибка: \n', err);
         res.send(500).json({ message: "Не удалось получить выбранную заметку" });
     }
-}
+};
 
 module.exports.saveNote = async (req, res) => {
     try {
@@ -44,7 +43,6 @@ module.exports.saveNote = async (req, res) => {
         });
 
         const saveNote = await note.save();
-        // const noteId = saveNote._id;
         res.json({ note: saveNote });
     }
     catch (err) {
@@ -80,7 +78,7 @@ module.exports.updateNote = async (req, res) => {
     }
 };
 
-// WILL NEED TO BE REPLACED
+// WILL NEED TO BE REPLACED OR APPLY TO DELETE A NOTE IN THE CART
 module.exports.deleteNote = async (req, res) => {
     try {
         const noteId = req.params.id;
@@ -108,12 +106,12 @@ module.exports.addToCart = async (req, res) => {
         const delNote = await noteModel.findByIdAndDelete(noteId);
 
         if (!note) {
-            res.status(404).json({ success: false, message: "Не удалось дабавить заметку в корзину" })
-        };
+            res.status(404).json({ success: false, message: "Не удалось дабавить заметку в корзину" });
+        }
 
         if (!delNote) {
             res.status(404).json({ success: false, message: "Не удалось удалить заметку", note: delNote });
-        };
+        }
 
         const noteCart = new noteCartModel({
             notes: note,
@@ -124,9 +122,9 @@ module.exports.addToCart = async (req, res) => {
         res.status(200).json({ success: true, message: "Успешное добавление заметки в корзину", note: saveNote, delete: delNote });
     }
     catch (err) {
-        res.status(500).json({ message: "Что-то пошло не так!" })
+        res.status(500).json({ message: "Что-то пошло не так!" });
     }
-}
+};
 
 module.exports.cartNote = async (req, res) => {
     try {
@@ -135,6 +133,6 @@ module.exports.cartNote = async (req, res) => {
         res.status(200).json({ success: true, message: null, data: noteCart });
     }
     catch (err) {
-        res.status(500).json({ message: "Что-то пошло не так!" })
+        res.status(500).json({ message: "Что-то пошло не так!" });
     }
-}
+};
