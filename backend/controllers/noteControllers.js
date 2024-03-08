@@ -156,7 +156,7 @@ module.exports.cartNote = async (req, res) => {
 module.exports.recoveryNote = async (req, res) => {
   try {
     const noteId = req.params.id;
-    const note = await noteCartModel.findById(noteId).populate("notes").exec();
+    const note = await noteCartModel.findById(noteId).populate("_id").exec();
 
     if (!note) {
       return res.status(404).json({
@@ -166,11 +166,7 @@ module.exports.recoveryNote = async (req, res) => {
     }
 
     const noteRecovery = new noteModel({
-      name: note.notes.name,
-      smile: note.notes.smile,
-      imageUrl: note.notes.imageUrl,
-      blocks: note.notes.blocks,
-      user: note.notes.user,
+      name: note.notes,
     });
 
     const saveNote = await noteRecovery.save();
@@ -179,12 +175,7 @@ module.exports.recoveryNote = async (req, res) => {
       success: true,
       message: "Заметка успешно восстановлена",
       saveNote,
-      // note: note.notes,
-      name: note.notes.name,
-      smile: note.notes.smile,
-      imageUrl: note.notes.imageUrl,
-      blocks: note.notes.blocks,
-      user: note.notes.user,
+      note: note.notes,
       noteId,
     });
   } catch (err) {
