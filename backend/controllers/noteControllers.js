@@ -169,12 +169,12 @@ module.exports.recoveryNote = async (req, res) => {
       name: note.notes,
     });
 
-    const saveNote = await noteRecovery.save();
+    // const saveNote = await noteRecovery.save();
 
     res.status(200).json({
       success: true,
       message: "Заметка успешно восстановлена",
-      saveNote,
+      // saveNote,
       note: note.notes,
       noteId,
     });
