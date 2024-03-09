@@ -209,3 +209,22 @@ module.exports.deleteNote = async (req, res) => {
     });
   }
 };
+
+// ПОИСК ВСЕХ ЗАМЕТОК
+module.exports.searchNotes = async (req, res) => {
+  try {
+    const searchName = req.params.name;
+    const note = await noteModel.find({ user: req.userId });
+
+    const searchNote = note.filter((noteName) => {
+      return noteName.name.toLowerCase().includes(searchName.toLowerCase());
+    });
+
+    res.status(200).send(searchNote);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Не удалось найти заметку, что-то пошло не так!",
+    });
+  }
+};

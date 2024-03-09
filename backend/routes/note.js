@@ -11,6 +11,7 @@ const {
   addToCart,
   cartNote,
   recoveryNote,
+  searchNotes,
 } = require("../controllers/noteControllers");
 const checkAuth = require("../utils/checkAuth");
 const { upload } = require("../controllers/uploadImd");
@@ -18,16 +19,7 @@ const { upload } = require("../controllers/uploadImd");
 const router = Router();
 
 // ПОЛУЧЕНИЕ ВСЕХ ЗАМЕТОК ПОЛЬЗОВАТЕЛЯ
-router.get("/notes", checkAuth, getNote, async (req, res) => {
-  try {
-    const { search } = req.query;
-    const searchNote = await noteModel.find({ user: req.userId });
-    res.send(searchNote);
-  } catch (err) {
-    console.log(err);
-    res.send({ message: "ошибка", err });
-  }
-});
+router.get("/notes", checkAuth, getNote);
 // СОЗДАНИЕ НОВОЙ ЗАМЕТКИ В БАЗЕ ПОЛЬЗОВАТЕЛЯ
 router.post("/notes/save", checkAuth, saveNote);
 // ВЫБОР ОПРЕДЕЛЕННОЙ ЗАМЕТКИ ПО ID
@@ -49,5 +41,6 @@ router.post("/uploads", checkAuth, upload.single("image"), (req, res) => {
     : req.body.imageUrl;
   res.json({ url: imageUrl });
 });
+router.get("/notes/search/:name", checkAuth, searchNotes);
 
 module.exports = router;
