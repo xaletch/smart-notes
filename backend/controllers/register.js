@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
 
     const user = await doc.save();
 
-    const token = jwt.sign(
+    const access_token = jwt.sign(
       {
         _id: user._id,
       },
@@ -38,7 +38,7 @@ exports.register = async (req, res) => {
       success: true,
       message: "Учетная запись успешно создана",
       ...userData,
-      token,
+      access_token,
     });
   } catch (err) {
     res.status(500).json({

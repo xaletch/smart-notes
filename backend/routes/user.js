@@ -9,10 +9,10 @@ const { auth } = require("../controllers/auth");
 const routers = Router();
 
 // РЕГИСТРАЦИЯ
-routers.post("/user/register", registerValidation, register);
+routers.post("/api/user/register", registerValidation, register);
 // АВТОРИЗАЦИЯ
-routers.post("/user/login", login);
+routers.post("/api/user/login", login);
 // ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ
-routers.get("/user/account", checkAuth, auth);
+routers.get("/api/user/account", checkAuth, auth);
 
 module.exports = routers;

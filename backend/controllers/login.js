@@ -25,7 +25,7 @@ exports.login = async (req, res) => {
         .json({ success: false, message: "Неверный логин или пароль" });
     }
 
-    const token = jwt.sign(
+    const access_token = jwt.sign(
       {
         _id: user._id,
       },
@@ -38,7 +38,7 @@ exports.login = async (req, res) => {
       success: true,
       message: "Вы успешно авторизованы",
       ...userData,
-      token,
+      access_token,
     });
   } catch (err) {
     res
