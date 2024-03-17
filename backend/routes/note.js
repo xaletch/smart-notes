@@ -12,6 +12,7 @@ const {
   cartNote,
   recoveryNote,
   searchNotes,
+  subNote,
 } = require("../controllers/noteControllers");
 const checkAuth = require("../utils/checkAuth");
 const { upload } = require("../controllers/uploadImd");
@@ -22,6 +23,8 @@ const router = Router();
 router.get("/api/notes", checkAuth, getNote);
 // СОЗДАНИЕ НОВОЙ ЗАМЕТКИ В БАЗЕ ПОЛЬЗОВАТЕЛЯ
 router.post("/api/notes/save", checkAuth, saveNote);
+// СОЗДАНИЕ ПОДЗАМЕТКИ
+router.post("/api/notes/subnote", checkAuth, subNote);
 // ПОЛУЧЕНИЕ ОПРЕДЕЛЕННОЙ ЗАМЕТКИ ПО ID
 router.get("/api/notes/oneNote/:id", checkAuth, getOneNote);
 // ИЗМЕНЕНИЕ ЗАМЕТКИ ПО ID

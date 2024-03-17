@@ -52,6 +52,7 @@ module.exports.saveNote = async (req, res) => {
       smile: req.body.smile,
       imageUrl: req.body.imageUrl,
       blocks: req.body.blocks,
+      subnotes: req.body.subnotes,
       user: req.userId,
     });
 
@@ -64,6 +65,42 @@ module.exports.saveNote = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, message: "Что-то пошло не так!" });
+  }
+};
+
+// СОЗДАНИЕ ПОДЗАМЕТКИ
+module.exports.subNote = async (req, res) => {
+  try {
+    const subNoteId = req.params.id;
+
+    // const parentNote = await noteModel.findById(subNoteId);
+
+    // const newSubNote = {
+    //   type: "note",
+    //   content: req.body,
+    // };
+
+    // parentNote.subnote.push(newSubNote);
+
+    // await parentNote.save();
+
+    // const subNote = {
+    //   content: req.body,
+    // };
+
+    // const saveNote = await subNote.save();
+
+    req.status(201).json({
+      require: true,
+      message: "Подзаметка успешно создана",
+      // subNote,
+      // parentNote,
+      subNoteId,
+    });
+  } catch (err) {
+    req
+      .status(500)
+      .json({ require: false, message: "Ошибка при создании подзаметки" });
   }
 };
 

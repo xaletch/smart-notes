@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const noteSchema = new mongoose.Schema({
+const subnoteSchema = new mongoose.Schema({
   name: {
     type: String,
     default: "без названия",
@@ -11,12 +11,6 @@ const noteSchema = new mongoose.Schema({
   },
   imageUrl: String,
   blocks: [Object],
-  subnotes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Subnote",
-    },
-  ],
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -24,4 +18,4 @@ const noteSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Note", noteSchema);
+module.exports.Subnote = mongoose.model("Subnote", subnoteSchema);
