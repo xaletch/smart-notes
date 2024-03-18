@@ -52,6 +52,9 @@ module.exports.saveNote = async (req, res) => {
       smile: req.body.smile,
       imageUrl: req.body.imageUrl,
       blocks: req.body.blocks,
+      createNote: new Date().toLocaleString("en-US", {
+        timeZone: "Europe/Moscow",
+      }),
       subnotes: req.body.subnotes,
       user: req.userId,
     });
@@ -227,7 +230,11 @@ module.exports.deleteNote = async (req, res) => {
   try {
     const noteId = req.params.id;
 
+    console.log(noteId);
+
     const note = await noteCartModel.findByIdAndDelete(noteId);
+
+    console.log(note);
 
     if (!note) {
       return res.status(404).json({

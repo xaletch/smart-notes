@@ -11,6 +11,10 @@ const noteSchema = new mongoose.Schema({
   },
   imageUrl: String,
   blocks: [Object],
+  createNote: {
+    type: Date,
+    default: Date.now,
+  },
   subnotes: [
     {
       type: mongoose.Schema.Types.ObjectId,
