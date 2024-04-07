@@ -218,18 +218,31 @@ module.exports.recoveryNote = async (req, res) => {
       });
     }
 
+    const delNote = await noteCartModel.findByIdAndDelete(noteId);
+
+    if (!delNote) {
+      return res.status(404).json({
+        success: false,
+        message: "Не удалось удалить заметку",
+      });
+    }
+
     const noteRecovery = new noteModel({
-      name: note.notes,
+      name: note.name,
+      smile: note.smile,
+      imageUrl: note.imageUrl,
+      blocks: note.blocks,
+      subnotes: note.subnotes,
+      user: req.userId,
     });
 
-    // const saveNote = await noteRecovery.save();
+    const saveNote = await noteRecovery.save();
 
     res.status(200).json({
       success: true,
       message: "Заметка успешно восстановлена",
-      // saveNote,
-      note: note.notes,
-      noteId,
+      saveNote,
+      note: note,
     });
   } catch (err) {
     res.status(500).json({
@@ -243,11 +256,7 @@ module.exports.deleteNote = async (req, res) => {
   try {
     const noteId = req.params.id;
 
-    console.log(noteId);
-
     const note = await noteCartModel.findByIdAndDelete(noteId);
-
-    console.log(note);
 
     if (!note) {
       return res.status(404).json({
