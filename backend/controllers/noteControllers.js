@@ -142,26 +142,31 @@ module.exports.addToCart = async (req, res) => {
   try {
     const noteId = req.params.id;
 
-    const note = await noteModel.findById({ _id: noteId });
-    // УДАЛЯЕМ ЗАМЕТКУ ИЗ БОКОВОЙ ПАНЕЛИ СО ВСЕМИ ЗАМЕТКАМИ (ТОЛЬКО ПРИ УСПЕШНОМ ЗАПРОСЕ)
-    const delNote = await noteModel.findByIdAndDelete(noteId);
+    const note = await noteModel.findById(noteId);
 
     if (!note) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
-        message: "Не удалось дабавить заметку в корзину, заметка не найдена",
+        message: "Заметка не найдена",
       });
     }
 
+    const delNote = await noteModel.findByIdAndDelete(noteId);
+
     if (!delNote) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
-        message: "Не удалось удалить заметку, заметка не найдена",
+        message: "Не удалось удалить заметку",
       });
     }
 
     const noteCart = new noteCartModel({
-      notes: note,
+      name: note.name,
+      smile: note.smile,
+      imageUrl: note.imageUrl,
+      blocks: note.blocks,
+      subnotes: note.subnotes,
+      user: req.userId,
     });
 
     const saveNote = await noteCart.save();
@@ -169,12 +174,12 @@ module.exports.addToCart = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Заметка успешно добавлена в корзину",
-      note: saveNote.notes,
+      note: saveNote,
     });
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "При добавлении заметки в корзину, что-то пошло не так!",
+      message: "При добавлении заметки в корзину что-то пошло не так",
     });
   }
 };
@@ -182,16 +187,24 @@ module.exports.addToCart = async (req, res) => {
 // ПОЛУЧЕНИЕ ВСЕХ ЗАМЕТОК КОТОРЫЙ БЫЛИ ПОМЕЩЕНЫ В КОРЗИНУ
 module.exports.cartNote = async (req, res) => {
   try {
-    const noteCart = await noteCartModel.find({}).populate("_id").exec();
+    const noteCart = await noteCartModel
+      .find({ user: req.userId })
+      .populate()
+      .exec();
 
-    res.status(200).json({ success: true, message: null, data: noteCart });
+    res.status(200).json({
+      success: true,
+      message: null,
+      data: noteCart,
+    });
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "При получении заметок в коризине, что-то пошло не так!",
+      message: "При получении заметок в корзине, что-то пошло не так!",
     });
   }
 };
+
 // ВОССТАНОВЛЕНИЕ ЗАМЕТКИ ИЗ КОРЗИНЫ
 module.exports.recoveryNote = async (req, res) => {
   try {
