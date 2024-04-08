@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const subnoteSchema = new mongoose.Schema({
+const subNoteSchema = new mongoose.Schema({
   name: {
     type: String,
     default: "без названия",
@@ -16,6 +16,12 @@ const subnoteSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  subnotes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subnote",
+    },
+  ],
 });
 
-module.exports.Subnote = mongoose.model("Subnote", subnoteSchema);
+module.exports = mongoose.model("Subnote", subNoteSchema);

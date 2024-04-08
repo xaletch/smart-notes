@@ -25,7 +25,7 @@ router.get("/api/notes", checkAuth, getNote);
 // СОЗДАНИЕ НОВОЙ ЗАМЕТКИ В БАЗЕ ПОЛЬЗОВАТЕЛЯ
 router.post("/api/notes/save", checkAuth, saveNote);
 // СОЗДАНИЕ ПОДЗАМЕТКИ
-router.post("/api/notes/subnote", checkAuth, subNote);
+router.post("/api/notes/subnote/:id", checkAuth, subNote);
 // ПОЛУЧЕНИЕ ОПРЕДЕЛЕННОЙ ЗАМЕТКИ ПО ID
 router.get("/api/notes/oneNote/:id", checkAuth, getOneNote);
 // ИЗМЕНЕНИЕ ЗАМЕТКИ ПО ID

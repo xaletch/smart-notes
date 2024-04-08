@@ -1,21 +1,22 @@
 // ИМПОРТИРУЕМ МОДЕЛИ ДЛЯ ЗАПИСИ ДАННЫХ В БД
 const noteModel = require("../models/noteModel");
 const noteCartModel = require("../models/noteCartModel");
+const subNoteModel = require("../models/subNoteModel");
 
 // ПОЛУЧЕНИЕ ВСЕХ ЗАМЕТОК ПОЛЬЗОВАТЕЛЯ
 module.exports.getNote = async (req, res) => {
   try {
-    const note = await noteModel
+    const notes = await noteModel
       .find({ user: req.userId })
       .populate("user")
+      .populate("subnotes")
       .exec();
 
-    // res.status(200).send({ success: true, message: null, items: note });
-    res.status(200).send(note);
+    res.status(200).json(notes);
   } catch (err) {
-    trs.send(500).json({
+    res.status(500).json({
       success: false,
-      message: "При получении заметок что-то пошло не так",
+      message: "Возникла ошибка при получении заметок",
     });
   }
 };
@@ -74,34 +75,41 @@ module.exports.saveNote = async (req, res) => {
 // СОЗДАНИЕ ПОДЗАМЕТКИ
 module.exports.subNote = async (req, res) => {
   try {
-    const subNoteId = req.params.id;
+    const noteId = req.params.id;
 
-    // const parentNote = await noteModel.findById(subNoteId);
+    const parentNote = await noteModel
+      .findById(noteId)
+      .populate("subnotes")
+      .exec();
 
-    // const newSubNote = {
-    //   type: "note",
-    //   content: req.body,
-    // };
+    const newSubNote = new subNoteModel({
+      name: req.body.name,
+      smile: req.body.smile,
+      imageUrl: req.body.imageUrl,
+      blocks: req.body.blocks,
+      createNote: new Date().toLocaleString("en-US", {
+        timeZone: "Europe/Moscow",
+      }),
+      user: req.userId,
+    });
 
-    // parentNote.subnote.push(newSubNote);
+    const savedSubNote = await newSubNote.save();
 
-    // await parentNote.save();
+    if (!parentNote) {
+      res.status(404).json({ success: false, message: "Заметка не найдена" });
+    }
 
-    // const subNote = {
-    //   content: req.body,
-    // };
+    parentNote.subnotes.push(savedSubNote._id);
+    await parentNote.save();
 
-    // const saveNote = await subNote.save();
-
-    req.status(201).json({
-      require: true,
+    res.status(201).json({
+      success: true,
       message: "Подзаметка успешно создана",
-      // subNote,
-      // parentNote,
-      subNoteId,
+      note: newSubNote,
+      noteId,
     });
   } catch (err) {
-    req
+    res
       .status(500)
       .json({ require: false, message: "Ошибка при создании подзаметки" });
   }
