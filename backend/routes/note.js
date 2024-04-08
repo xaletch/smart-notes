@@ -13,6 +13,7 @@ const {
   recoveryNote,
   searchNotes,
   subNote,
+  searchNotesCart,
 } = require("../controllers/noteControllers");
 const checkAuth = require("../utils/checkAuth");
 const { upload } = require("../controllers/uploadImd");
@@ -46,5 +47,7 @@ router.post("/api/uploads", checkAuth, upload.single("image"), (req, res) => {
 });
 // ПОИСК ЗАМЕТОК ПО ИМЕНИ
 router.get("/api/notes/search/:name", checkAuth, searchNotes);
+// ПОИСК ЗАМЕТОК ПО КОРЗИНЕ
+router.get("/api/notes/search/cart/:name", checkAuth, searchNotesCart);
 
 module.exports = router;

@@ -294,3 +294,22 @@ module.exports.searchNotes = async (req, res) => {
     });
   }
 };
+
+// ПОИСК ЗАМЕТОК ПО КОРЗИНЕ
+module.exports.searchNotesCart = async (req, res) => {
+  try {
+    const searchName = req.params.name;
+    const note = await noteCartModel.find({ user: req.userId });
+
+    const searchNote = note.filter((noteName) => {
+      return noteName.name.toLowerCase().includes(searchName.toLowerCase());
+    });
+
+    res.status(200).send(searchNote);
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Не удалось найти заметку, что-то пошло не так!",
+    });
+  }
+};
