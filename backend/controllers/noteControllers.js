@@ -3,19 +3,26 @@ const noteModel = require("../models/noteModel");
 const noteCartModel = require("../models/noteCartModel");
 const subNoteModel = require("../models/subNoteModel");
 
+// ВЛОЖЕННОСТЬ ЗАМЕТОК ДО 30
+function generatePopulateQuery(level, path, populate) {
+  if (level === 0) {
+    return populate;
+  }
+  return {
+    path,
+    populate: generatePopulateQuery(level - 1, path, populate),
+  };
+}
+
 // ПОЛУЧЕНИЕ ВСЕХ ЗАМЕТОК ПОЛЬЗОВАТЕЛЯ
 module.exports.getNote = async (req, res) => {
   try {
+    // ВОТ ЭТО Я НАГАВНАКОДИЛ
     const notes = await noteModel
       .find({ user: req.userId })
       .populate({
         path: "subnotes",
-        populate: {
-          path: "subnotes",
-          populate: {
-            path: "subnotes",
-          },
-        },
+        populate: generatePopulateQuery(30, "subnotes", { path: "subnotes" }),
       })
       .exec();
 
