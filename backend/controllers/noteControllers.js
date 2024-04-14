@@ -8,8 +8,15 @@ module.exports.getNote = async (req, res) => {
   try {
     const notes = await noteModel
       .find({ user: req.userId })
-      .populate("user")
-      .populate("subnotes")
+      .populate({
+        path: "subnotes",
+        populate: {
+          path: "subnotes",
+          populate: {
+            path: "subnotes",
+          },
+        },
+      })
       .exec();
 
     res.status(200).json(notes);
@@ -26,19 +33,23 @@ module.exports.getOneNote = async (req, res) => {
   try {
     const noteId = req.params.id;
 
-    const note = await noteModel.findById({ _id: noteId });
+    const note = await Promise.all([
+      noteModel.findById({ _id: noteId }),
+      subNoteModel.findById({ _id: noteId }),
+    ]);
 
-    if (!note) {
+    const foundNote = note.find((note) => note !== null);
+
+    if (!foundNote) {
       return res.status(404).json({
         success: false,
         message: "Не удалось получить данные о выбранной заметке",
       });
     }
 
-    // res.status(200).json({ success: true, message: null, note });
-    res.status(200).send(note);
+    res.status(200).send(foundNote);
   } catch (err) {
-    res.send(500).json({
+    res.status(500).json({
       success: false,
       message: "При получении выбранной заметки, что-то пошло не так",
     });
@@ -77,10 +88,18 @@ module.exports.subNote = async (req, res) => {
   try {
     const noteId = req.params.id;
 
-    const parentNote = await noteModel
-      .findById(noteId)
-      .populate("subnotes")
-      .exec();
+    const parentNote = await Promise.all([
+      noteModel.findById(noteId).populate("subnotes").exec(),
+      subNoteModel.findById(noteId).populate("subnotes").exec(),
+    ]);
+
+    const foundNote = parentNote.find((note) => note !== null);
+
+    if (!foundNote) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Заметка не найдена" });
+    }
 
     const newSubNote = new subNoteModel({
       name: req.body.name,
@@ -95,12 +114,8 @@ module.exports.subNote = async (req, res) => {
 
     const savedSubNote = await newSubNote.save();
 
-    if (!parentNote) {
-      res.status(404).json({ success: false, message: "Заметка не найдена" });
-    }
-
-    parentNote.subnotes.push(savedSubNote._id);
-    await parentNote.save();
+    foundNote.subnotes.push(savedSubNote._id);
+    await foundNote.save();
 
     res.status(201).json({
       success: true,
@@ -120,19 +135,34 @@ module.exports.updateNote = async (req, res) => {
   try {
     const noteId = req.params.id;
 
-    const note = await noteModel.updateOne(
-      {
-        _id: noteId,
-      },
-      {
-        name: req.body.name,
-        smile: req.body.smile,
-        imageUrl: req.body.imageUrl,
-        blocks: req.body.blocks,
-      }
-    );
+    const note = await Promise.all([
+      noteModel.updateOne(
+        {
+          _id: noteId,
+        },
+        {
+          name: req.body.name,
+          smile: req.body.smile,
+          imageUrl: req.body.imageUrl,
+          blocks: req.body.blocks,
+        }
+      ),
+      subNoteModel.updateOne(
+        {
+          _id: noteId,
+        },
+        {
+          name: req.body.name,
+          smile: req.body.smile,
+          imageUrl: req.body.imageUrl,
+          blocks: req.body.blocks,
+        }
+      ),
+    ]);
 
-    if (!note) {
+    const foundNote = note.find((note) => note !== null);
+
+    if (!foundNote) {
       return res.status(404).json({
         success: false,
         message: "Не удалось обновить заметку, заметка не найдена",
@@ -150,18 +180,26 @@ module.exports.addToCart = async (req, res) => {
   try {
     const noteId = req.params.id;
 
-    const note = await noteModel.findById(noteId);
+    const note = await Promise.all([
+      noteModel.findById(noteId),
+      subNoteModel.findById(noteId),
+    ]);
 
-    if (!note) {
+    const foundNote = note.find((note) => note !== null);
+
+    if (!foundNote) {
       return res.status(404).json({
         success: false,
         message: "Заметка не найдена",
       });
     }
 
-    const delNote = await noteModel.findByIdAndDelete(noteId);
+    const deleteNote = await Promise.all([
+      noteModel.findByIdAndDelete(noteId),
+      subNoteModel.findByIdAndDelete(noteId),
+    ]);
 
-    if (!delNote) {
+    if (!deleteNote) {
       return res.status(404).json({
         success: false,
         message: "Не удалось удалить заметку",
@@ -169,11 +207,11 @@ module.exports.addToCart = async (req, res) => {
     }
 
     const noteCart = new noteCartModel({
-      name: note.name,
-      smile: note.smile,
-      imageUrl: note.imageUrl,
-      blocks: note.blocks,
-      subnotes: note.subnotes,
+      name: foundNote.name,
+      smile: foundNote.smile,
+      imageUrl: foundNote.imageUrl,
+      blocks: foundNote.blocks,
+      subnotes: foundNote.subnotes,
       user: req.userId,
     });
 
