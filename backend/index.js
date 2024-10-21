@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-const PORT = 3000;
+const PORT = 8080;
 
 app.use(express.json());
 app.use(cors());
@@ -13,7 +13,8 @@ app.use(cors());
 // ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ MONGODB
 mongoose
   .connect(
-    "mongodb+srv://admin:BrKMCijAkg9YIW15@kotion-note.9nos5rg.mongodb.net/?retryWrites=true&w=majority&appName=kotion-note"
+    // "mongodb+srv://admin:BrKMCijAkg9YIW15@kotion-note.9nos5rg.mongodb.net/?retryWrites=true&w=majority&appName=kotion-note"
+    "mongodb://127.0.0.1:27017/PlanYourDay"
   )
   .then(() => console.log("УСПЕШНОЕ ПОДКЛЮЧЕНИЕ К БД!"))
   .catch((err) => console.log("УПС...", err));
@@ -25,7 +26,7 @@ app.use(routes);
 app.use(userRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Главная страница");
+  res.send(`Server is working PORT ${PORT}`);
 });
 
 app.use("/uploads", express.static("uploads"));

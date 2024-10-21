@@ -26,6 +26,10 @@ const noteSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  isPublic: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 module.exports = mongoose.model("Note", noteSchema);

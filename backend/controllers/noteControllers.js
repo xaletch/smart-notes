@@ -76,6 +76,7 @@ module.exports.saveNote = async (req, res) => {
       }),
       subnotes: req.body.subnotes,
       user: req.userId,
+      isPublic: false,
     });
 
     const saveNote = await note.save();
@@ -117,6 +118,7 @@ module.exports.subNote = async (req, res) => {
         timeZone: "Europe/Moscow",
       }),
       user: req.userId,
+      isPublic: false,
     });
 
     const savedSubNote = await newSubNote.save();
@@ -366,3 +368,49 @@ module.exports.searchNotesCart = async (req, res) => {
     });
   }
 };
+
+module.exports.PublicNote = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isPublic } = req.body;
+
+    const note = await noteModel.findById(id);
+    if (!req.userId) {
+      return res.status(401).json({ success: false, message: "Пользователь не авторизован" });
+    }
+
+    if (!note) {
+      return res.status(404).json({ success: false, message: "Заметка не найдена" }); 
+    }
+
+    if (String(note.user) !== String(req.userId)) {
+      return res.status(403).json({ success: false, message: "Недостаточно прав" });
+    }
+
+    note.isPublic = isPublic;
+    await note.save();
+
+    res.status(200).json({ success: true, message: "Заметка открыта для просмотра", data: note });
+  }
+  catch (err) {
+    res.status(500).json({ success: false, message: "Что-то пошло не так" });
+    console.error(err);
+  }
+}
+
+module.exports.getPublicNote = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const note = await noteModel.findById(id);
+
+    if (!note || (!note.isPublic && (!req.user || String(note.userId) !== String(req.user._id)))) {
+      return res.status(404).json({ success: false, message: "Заметка не найдена или доступ запрещен" });
+    }
+
+    res.status(200).json({ success: true, message: "Заметка для просмотра", data: note });
+  }
+  catch(err) {
+    res.status(500).json({ success: false, message: "Что-то пошло не так" });
+    console.error(err);
+  }
+}

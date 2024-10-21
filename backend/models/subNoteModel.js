@@ -22,6 +22,10 @@ const subNoteSchema = new mongoose.Schema({
       ref: "Subnote",
     },
   ],
+  isPublic: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 module.exports = mongoose.model("Subnote", subNoteSchema);
