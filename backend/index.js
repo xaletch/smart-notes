@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-const PORT = 8080;
+const PORT = 8888;
 
 app.use(express.json());
 app.use(cors());
