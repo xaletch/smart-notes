@@ -13,8 +13,9 @@ app.use(cors());
 // ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ MONGODB
 mongoose
   .connect(
+    "mongodb+srv://kirilkolesnikov:inemvf7Gy3iSfiJw@habits.dczjfje.mongodb.net/?retryWrites=true&w=majority&appName=habits"
     // "mongodb+srv://admin:BrKMCijAkg9YIW15@kotion-note.9nos5rg.mongodb.net/?retryWrites=true&w=majority&appName=kotion-note"
-    "mongodb://127.0.0.1:27017/PlanYourDay"
+    // "mongodb://127.0.0.1:27017/PlanYourDay"
   )
   .then(() => console.log("УСПЕШНОЕ ПОДКЛЮЧЕНИЕ К БД!"))
   .catch((err) => console.log("УПС...", err));
